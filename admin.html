@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Panel</title>
+
+<style>
+body {
+    margin:0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #1a1a1a, #2c3e50);
+    color:white;
+    text-align:center;
+}
+
+.container {
+    max-width:400px;
+    margin:80px auto;
+    background:#111;
+    padding:30px;
+    border-radius:20px;
+    box-shadow:0 20px 50px rgba(0,0,0,0.5);
+}
+
+input {
+    width:100%;
+    padding:12px;
+    margin:10px 0;
+    border:none;
+    border-radius:10px;
+}
+
+button {
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    background:#f8b500;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.card {
+    background:#222;
+    margin:15px;
+    padding:15px;
+    border-radius:15px;
+}
+</style>
+
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div class="container" id="loginBox">
+    <h2>Admin Login 🔐</h2>
+    <input id="username" placeholder="Username">
+    <input id="password" type="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+</div>
+<!-- PANEL -->
+<div class="container" id="panel" style="display:none;">
+    <h2>Menu Manager 🔥</h2>
+
+    <input id="name" placeholder="Dish Name">
+    <input id="price" placeholder="Price">
+    <input id="image" placeholder="Image URL">
+
+    <button onclick="addItem()">Add Item</button>
+
+    <div id="menuList"></div>
+</div>
+
+<script>
+    function login(){
+        alert("Clicked");
+    }
+const BASE = "https://restaurant-backend-xthw.onrender.com";
+
+// 🔐 LOGIN
+async function login() {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+
+  const res = await fetch(BASE + "/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ username, password })
+  });
+
+  const data = await res.json();
+
+  if (data.success) {
+    alert("Login successful 🔥");
+    document.getElementById("loginBox").style.display="none";
+    document.getElementById("panel").style.display="block";
+    loadMenu();
+  } else {
+    alert("Wrong credentials ❌");
+  }
+}
+Token=data.token;
+// 📥 LOAD MENU
+async function loadMenu(){
+    const res = await fetch(BASE + "/menu");
+    const data = await res.json();
+
+    const list = document.getElementById("menuList");
+    list.innerHTML = "";
+
+    data.forEach((item,index)=>{
+        list.innerHTML += `
+        <div class="card">
+            <h3>${item.name}</h3>
+            <p>₹${item.price}</p>
+            <img src="${item.image}" width="100">
+            <br><br>
+            <button onclick="deleteItem(${index})">Delete</button>
+        </div>
+        `;
+    });
+}
+
+// ➕ ADD
+async function addItem(){
+    await fetch(BASE + "/menu",{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+            name:document.getElementById("name").value,
+            price:document.getElementById("price").value,
+            image:document.getElementById("image").value
+        })
+    });
+
+    loadMenu();
+}
+
+// ❌ DELETE
+async function deleteItem(index){
+    await fetch(BASE + "/menu/" + index,{
+        method:"DELETE"
+    });
+
+    loadMenu();
+}
+</script>
+
+</body>
+</html>

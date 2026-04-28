@@ -505,8 +505,8 @@
             color: white;
             text-align: center;
             padding: 3rem 0 1rem;
+            
         }
-
         .social-links {
             display: flex;
             justify-content: center;
@@ -669,18 +669,7 @@
                         <i class="fas fa-star"></i>
                         Appetizers
                     </h3>
-                    <div class="menu-item">
-                        <span>Chicken Tikka Masala</span>
-                        <span class="item-price">$12</span>
-                    </div>
-                    <div class="menu-item">
-                        <span>Palak Paneer</span>
-                        <span class="item-price">$10</span>
-                    </div>
-                    <div class="menu-item">
-                        <span>Samosa Platter</span>
-                        <span class="item-price">$14</span>
-                    </div>
+                    <div id="menuContainer" class="menu-grid"></div>
                 </div>
                 <div class="menu-category entrance-anim">
                     <div class="menu-header">
@@ -816,6 +805,17 @@
             </div>
             <p>&copy; 2024 [RESTAURANT NAME]. All rights reserved. | Made with ❤️ for great food lovers.</p>
         </div>
+        <footer>
+    <div class="social-links">
+        ...
+    </div>
+
+    <p style="opacity:0.5; font-size:13px; margin-top:10px;">
+        <a href="/admin.html" style="color:#888; text-decoration:none;">
+            Manage
+        </a>
+    </p>
+</footer>
     </footer>
 
     <script>
@@ -879,7 +879,7 @@
                 message: this.querySelector('textarea').value
             };
 
-            const res = await fetch("http://localhost:5000/reserve", {
+            const res = await fetch("https://restaurant-backend-xthw.onrender.com/reserve", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -917,6 +917,35 @@
                 hero.style.transform = `translateY(${scrolled * 0.5}px)`;
             }
         });
+        async function loadMenu(){
+    const res = await fetch("https://restaurant-backend-xthw.onrender.com/menu");
+    const data = await res.json();
+
+    const container = document.getElementById("menuContainer");
+    container.innerHTML = "";
+
+    data.forEach(item => {
+        container.innerHTML += `
+        <div class="menu-category entrance-anim">
+            <div class="menu-header">
+                <img src="${item.image}" alt="${item.name}">
+            </div>
+
+            <h3 class="category-title">
+                <i class="fas fa-utensils"></i>
+                ${item.name}
+            </h3>
+
+            <div class="menu-item">
+                <span>${item.name}</span>
+                <span class="item-price">₹${item.price}</span>
+            </div>
+        </div>
+        `;
+    });
+}
+
+loadMenu();
     </script>
 </body>
 </html>
